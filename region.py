@@ -1,6 +1,6 @@
 import urllib.request
 from bs4 import BeautifulSoup
-
+import time
 
 #
 # 爬取 统计局全国信息
@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 #
 
 def getSoup(url):
+    time.sleep(1)
     # 请求
     request = urllib.request.Request(url)
     request.add_header('User-Agent',
