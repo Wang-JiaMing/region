@@ -30,7 +30,7 @@ def main():
     file.close();
 
 
-# 顶层省
+# 省
 def getProvince(soup,file):
     _index = 0
     loopIndex = 0
@@ -81,7 +81,7 @@ def getDistrict(index, provinceCode, provinceName, cityCode, cityName, href,file
         loopIndex = loopIndex + 1
     return _index
 
-
+#街道
 def getTown(index, provinceCode, provinceName, cityCode, cityName, districtCode, districtName, href,file):
     _index = index
     _townSoup = getSoup("http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2017/" + href);
@@ -97,7 +97,7 @@ def getTown(index, provinceCode, provinceName, cityCode, cityName, districtCode,
         loopIndex = loopIndex + 1
     return _index
 
-
+#居委会
 def getVillage(index, provinceCode, provinceName, cityCode, cityName, districtCode, districtName, townCode, townName,href,file):
     _index = index
     _villageSoup = getSoup("http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2017/" + href);
