@@ -11,8 +11,7 @@ def getSoup(url):
     time.sleep(1)
     # 请求
     request = urllib.request.Request(url)
-    request.add_header('User-Agent',
-                       'Mozilla/6.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/8.0 Mobile/10A5376e Safari/8536.25')
+    request.add_header('User-Agent','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36' )
     # 爬取结果
     response = urllib.request.urlopen(request)
     data = response.read()
