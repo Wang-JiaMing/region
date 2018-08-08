@@ -8,14 +8,16 @@ import time
 #
 
 def getSoup(url):
-    time.sleep(1)
     # 请求
-    request = urllib.request.Request(url)
-    request.add_header('User-Agent','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36' )
-    # 爬取结果
-    response = urllib.request.urlopen(request)
-    data = response.read()
+    try:
+        request = urllib.request.Request(url)
+        request.add_header('User-Agent','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36' )
+        # 爬取结果
+        response = urllib.request.urlopen(request)
+    except BaseException:
+        getSoup(url)
 
+    data = response.read()
     # 设置解码方式
     data = data.decode('gbk')
     # print(data)
