@@ -1,13 +1,12 @@
 import socket
 import urllib.request
 from bs4 import BeautifulSoup
-import time
 
+'''
+爬取统计局全国信息
 
-#
-# 爬取 统计局全国信息
-# authon:wangjiaming
-#
+authon:wangjiaming
+'''
 def getSoup(url, code):
     # 请求
     try:
@@ -46,8 +45,7 @@ def getProvince(soup):
     _topHtml = soup.find_all(attrs={'class': 'provincetr'})
     while loopIndex < len(_topHtml) - 1:
         for tag in _topHtml[loopIndex].select('a'):
-            if (
-                                                                            tag.get_text() != '北京市' and tag.get_text() != '天津市' and tag.get_text() != '河北省' and tag.get_text() != '山西省' and tag.get_text() != '内蒙古自治区' and tag.get_text() != '辽宁省' and tag.get_text() != '吉林省' and tag.get_text() != '黑龙江省' and tag.get_text() != '上海市' and tag.get_text() != '江苏省' and tag.get_text() != '浙江省' and tag.get_text() != '安徽省' and tag.get_text() != '福建省' and tag.get_text() != '江西省' and tag.get_text() != '山东省' and tag.get_text() != '河南省'):
+            if (tag.get_text() != '北京市' and tag.get_text() != '天津市' and tag.get_text() != '河北省' and tag.get_text() != '山西省' and tag.get_text() != '内蒙古自治区' and tag.get_text() != '辽宁省' and tag.get_text() != '吉林省' and tag.get_text() != '黑龙江省' and tag.get_text() != '上海市' and tag.get_text() != '江苏省' and tag.get_text() != '浙江省' and tag.get_text() != '安徽省' and tag.get_text() != '福建省' and tag.get_text() != '江西省' and tag.get_text() != '山东省' and tag.get_text() != '河南省' and tag.get_text() != '湖北省' and tag.get_text() != '湖南省' and tag.get_text() != '广东省' and tag.get_text() != '广西壮族自治区' and tag.get_text() != '海南省' and tag.get_text() != '重庆市'):
                 printInsertSql(_index, str(tag['href']).split('.')[0] + "0000000000", "", 1, tag.get_text(), "", "", "",
                                "")
                 _index = getCity(_index, str(tag['href']).split('.')[0] + "0000000000", tag.get_text(), tag['href']);
@@ -120,7 +118,7 @@ def getVillage(index, provinceCode, provinceName, cityCode, cityName, districtCo
                href):
     _index = index
 
-    if ("http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2017/" + href == 'http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2017/42/06/84/420684103.html'):
+    if ("http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2017/" + href == 'http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2017/42/06/84/420684103.html' or "http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2017/" + href =="http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2017/51/06/81/510681114.html"):
         _villageSoup = getSoup("http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2017/" + href, 'gb18030')
     else:
         _villageSoup = getSoup("http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2017/" + href, 'gbk')
