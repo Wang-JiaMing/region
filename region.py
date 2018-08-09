@@ -8,7 +8,7 @@ import time
 # 爬取 统计局全国信息
 # authon:wangjiaming
 #
-def getSoup(url):
+def getSoup(url, code):
     # 请求
     try:
         # 设置超时时间2秒，2秒内返不回直接重调用当前这个url，简单粗暴的做法
@@ -24,36 +24,40 @@ def getSoup(url):
 
         data = response.read()
         # 设置解码方式
-        data = data.decode('gbk')
+        data = data.decode(code)
         # print(data)
         soup = BeautifulSoup(data, 'html.parser')
-    except BaseException:
-        print('重试')
-        soup = getSoup(url)
+    except BaseException as err:
+        print(err)
+        print('重试：' + url)
+        soup = getSoup(url, 'gbk')
     return soup
 
 
 def main():
-    soup = getSoup("http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2017/index.html");
+    soup = getSoup("http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2017/index.html",'gbk');
     getProvince(soup)
 
 
 # 省
 def getProvince(soup):
-    _index = 0
+    _index = 427699
     loopIndex = 0
     _topHtml = soup.find_all(attrs={'class': 'provincetr'})
     while loopIndex < len(_topHtml) - 1:
         for tag in _topHtml[loopIndex].select('a'):
-            printInsertSql(_index, str(tag['href']).split('.')[0] + "0000000000", "", 1, tag.get_text(), "", "", "", "")
-            _index = getCity(_index, str(tag['href']).split('.')[0] + "0000000000", tag.get_text(), tag['href']);
+            if (
+                                                                            tag.get_text() != '北京市' and tag.get_text() != '天津市' and tag.get_text() != '河北省' and tag.get_text() != '山西省' and tag.get_text() != '内蒙古自治区' and tag.get_text() != '辽宁省' and tag.get_text() != '吉林省' and tag.get_text() != '黑龙江省' and tag.get_text() != '上海市' and tag.get_text() != '江苏省' and tag.get_text() != '浙江省' and tag.get_text() != '安徽省' and tag.get_text() != '福建省' and tag.get_text() != '江西省' and tag.get_text() != '山东省' and tag.get_text() != '河南省'):
+                printInsertSql(_index, str(tag['href']).split('.')[0] + "0000000000", "", 1, tag.get_text(), "", "", "",
+                               "")
+                _index = getCity(_index, str(tag['href']).split('.')[0] + "0000000000", tag.get_text(), tag['href']);
         loopIndex = loopIndex + 1
 
 
 # 市
 def getCity(index, provinceCode, provinceName, href):
     _index = index
-    _citySoup = getSoup("http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2017/" + href);
+    _citySoup = getSoup("http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2017/" + href,'gbk');
     _cityHtml = _citySoup.find_all(attrs={'class': 'citytr'})
     loopIndex = 0
     while loopIndex < len(_cityHtml):
@@ -70,7 +74,7 @@ def getCity(index, provinceCode, provinceName, href):
 # 区
 def getDistrict(index, provinceCode, provinceName, cityCode, cityName, href):
     _index = index
-    _districtSoup = getSoup("http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2017/" + href);
+    _districtSoup = getSoup("http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2017/" + href,'gbk');
     _districtHtml = _districtSoup.find_all(attrs={'class': 'countytr'})
     loopIndex = 0
     while loopIndex < len(_districtHtml):
@@ -87,7 +91,8 @@ def getDistrict(index, provinceCode, provinceName, cityCode, cityName, href):
             _districtName = _districtHtml[loopIndex].select('td')[1].get_text()
         printInsertSql(_index, _districtCode, cityCode, 3, provinceName, cityName, _districtName, "", "")
         if (_href != ""):
-            _index = getTown(_index, provinceCode, provinceName, cityCode, cityName, _districtCode, _districtName,_href)
+            _index = getTown(_index, provinceCode, provinceName, cityCode, cityName, _districtCode, _districtName,
+                             _href)
         loopIndex = loopIndex + 1
     return _index
 
@@ -95,7 +100,7 @@ def getDistrict(index, provinceCode, provinceName, cityCode, cityName, href):
 # 街道
 def getTown(index, provinceCode, provinceName, cityCode, cityName, districtCode, districtName, href):
     _index = index
-    _townSoup = getSoup("http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2017/" + href);
+    _townSoup = getSoup("http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2017/" + href,'gbk');
     _townHtml = _townSoup.find_all(attrs={'class': 'towntr'})
     loopIndex = 0
     while loopIndex < len(_townHtml):
@@ -104,7 +109,8 @@ def getTown(index, provinceCode, provinceName, cityCode, cityName, districtCode,
         _townName = _townHtml[loopIndex].select('a')[1].get_text()
         printInsertSql(_index, _townCode, districtCode, 4, provinceName, cityName, districtName, _townName, "")
         _href = str(href.split("/")[0] + "/" + href.split("/")[1] + "/" + _townHtml[loopIndex].select('a')[0]['href'])
-        _index = getVillage(_index, provinceCode, provinceName, cityCode, cityName, districtCode, districtName,_townCode, _townName, _href)
+        _index = getVillage(_index, provinceCode, provinceName, cityCode, cityName, districtCode, districtName,
+                            _townCode, _townName, _href)
         loopIndex = loopIndex + 1
     return _index
 
@@ -113,7 +119,13 @@ def getTown(index, provinceCode, provinceName, cityCode, cityName, districtCode,
 def getVillage(index, provinceCode, provinceName, cityCode, cityName, districtCode, districtName, townCode, townName,
                href):
     _index = index
-    _villageSoup = getSoup("http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2017/" + href);
+
+    if ("http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2017/" + href == 'http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2017/42/06/84/420684103.html'):
+        _villageSoup = getSoup("http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2017/" + href, 'gb18030')
+    else:
+        _villageSoup = getSoup("http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2017/" + href, 'gbk')
+
+    # _villageSoup = getSoup("http://www.stats.gov.cn/tjsj/tjbz/tjyqhdmhcxhfdm/2017/" + href);
     _villageHtml = _villageSoup.find_all(attrs={'class': 'villagetr'})
     loopIndex = 0
     while loopIndex < len(_villageHtml):
@@ -148,7 +160,8 @@ def printInsertSql(id, code, parent_code, level_grade, province, city, district,
         _short_name = _neighborhood_committee
     _all_address = _province + _city + _district + _street + _neighborhood_committee
     file = openFile()
-    file.writelines("insert into RHIN_SYS.TB_DI_CHINA(\"id\",\"code\",\"parent_code\",\"level_grade\",\"short_name\",\"name\") values(\"" + _id + "\",\"" + _code + "\",\"" + _parent_code + "\",\"" + _level_grade + "\",\"" + _short_name + "\",\"" + _all_address + "\");" + '\n')
+    file.writelines(
+        "insert into RHIN_SYS.TB_DI_CHINA(\"id\",\"code\",\"parent_code\",\"level_grade\",\"short_name\",\"name\") values(\"" + _id + "\",\"" + _code + "\",\"" + _parent_code + "\",\"" + _level_grade + "\",\"" + _short_name + "\",\"" + _all_address + "\");" + '\n')
     file.close()
     print(str(_province + "|" + _city + "|" + _district + "|" + _street + "|" + _neighborhood_committee))
 
