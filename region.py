@@ -45,10 +45,8 @@ def getProvince(soup):
     _topHtml = soup.find_all(attrs={'class': 'provincetr'})
     while loopIndex < len(_topHtml) - 1:
         for tag in _topHtml[loopIndex].select('a'):
-            if (tag.get_text() != '北京市' and tag.get_text() != '天津市' and tag.get_text() != '河北省' and tag.get_text() != '山西省' and tag.get_text() != '内蒙古自治区' and tag.get_text() != '辽宁省' and tag.get_text() != '吉林省' and tag.get_text() != '黑龙江省' and tag.get_text() != '上海市' and tag.get_text() != '江苏省' and tag.get_text() != '浙江省' and tag.get_text() != '安徽省' and tag.get_text() != '福建省' and tag.get_text() != '江西省' and tag.get_text() != '山东省' and tag.get_text() != '河南省' and tag.get_text() != '湖北省' and tag.get_text() != '湖南省' and tag.get_text() != '广东省' and tag.get_text() != '广西壮族自治区' and tag.get_text() != '海南省' and tag.get_text() != '重庆市'):
-                printInsertSql(_index, str(tag['href']).split('.')[0] + "0000000000", "", 1, tag.get_text(), "", "", "",
-                               "")
-                _index = getCity(_index, str(tag['href']).split('.')[0] + "0000000000", tag.get_text(), tag['href']);
+            printInsertSql(_index, str(tag['href']).split('.')[0] + "0000000000", "", 1, tag.get_text(), "", "", "","")
+            _index = getCity(_index, str(tag['href']).split('.')[0] + "0000000000", tag.get_text(), tag['href']);
         loopIndex = loopIndex + 1
 
 
@@ -158,8 +156,7 @@ def printInsertSql(id, code, parent_code, level_grade, province, city, district,
         _short_name = _neighborhood_committee
     _all_address = _province + _city + _district + _street + _neighborhood_committee
     file = openFile()
-    file.writelines(
-        "insert into RHIN_SYS.TB_DI_CHINA(\"id\",\"code\",\"parent_code\",\"level_grade\",\"short_name\",\"name\") values(\"" + _id + "\",\"" + _code + "\",\"" + _parent_code + "\",\"" + _level_grade + "\",\"" + _short_name + "\",\"" + _all_address + "\");" + '\n')
+    file.writelines("insert into RHIN_SYS.TB_DI_CHINA(id,code,parent_code,level_grade,short_name,name) values('" + _id + "','" + _code + "','" + _parent_code + "','" + _level_grade + "','" + _short_name + "','" + _all_address + "');"+"\n")
     file.close()
     print(str(_province + "|" + _city + "|" + _district + "|" + _street + "|" + _neighborhood_committee))
 
